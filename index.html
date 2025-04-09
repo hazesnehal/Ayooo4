@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense | AI-Powered Finance Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --primary-light: #A29BFE;
+            --secondary: #00B894;
+            --danger: #D63031;
+            --warning: #FDCB6E;
+            --info: #0984E3;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+            --white: #FFFFFF;
+            --gray: #636E72;
+            --gray-light: #DFE6E9;
+            
+            --shadow-sm: 0 1px 3px rgba(27, 21, 21, 0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--light);
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            transform: translateY(0);
+            opacity: 1;
+            transition: var(--transition);
+        }
+
+        .login-card.hidden {
+            transform: translateY(-20px);
+            opacity: 0;
+            display: none;
+        }
+
+        .login-brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .login-brand-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .login-brand-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .login-footer {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .login-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Glassmorphism effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            display: none; /* Initially hidden */
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--white);
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand-icon {
+            font-size: 1.8rem;
+            color: var(--white);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Summary Card */
+        .summary-card {
+            grid-column: span 4;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-title {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .summary-change {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+        }
+
+        .change-positive {
+            color: var(--secondary);
+        }
+
+        .change-negative {
+            color: var(--danger);
+        }
+
+        /* Main Chart Card */
+        .chart-card {
+            grid-column: span 8;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-btn {
+            background: var(--white);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Wallets Section */
+        .wallets-section {
+            grid-column: span 4;
+            padding: 1.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .add-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .wallets-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .wallet-card {
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .wallet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .wallet-name {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-balance {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .wallet-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wallet-meta {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .wallet-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .wallet-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Recent Transactions */
+        .transactions-section {
+            grid-column: span 8;
+            padding: 1.5rem;
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-light);
+            background: var(--white);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            transition: var(--transition);
+        }
+
+        .transaction-item:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+
+        .transaction-details {
+            flex: 1;
+        }
+
+        .transaction-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .transaction-meta {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+        }
+
+        .amount-income {
+            color: var(--secondary);
+        }
+
+        .amount-expense {
+            color: var(--danger);
+        }
+
+        /* Add Expense Floating Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-card, .chart-card, .wallets-section, .transactions-section {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .filter-controls {
+                flex-wrap: wrap;
+            }
+
+            .login-card {
+                padding: 2rem 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-card" id="loginCard">
+            <div class="login-brand">
+                <div class="login-brand-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="login-brand-name">SmartExpense</div>
+            </div>
+            
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to manage your finances</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            
+            <div class="login-footer">
+                Don't have an account? <a href="#">Sign up</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dashboard (Initially hidden) -->
+    <div class="app-container" id="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="brand-name">SmartExpense</div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text">Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span class="nav-text">Analytics</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span class="nav-text">Transactions</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-piggy-bank"></i>
+                    <span class="nav-text">Budgets</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="nav-text">Wallets</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-text">Reminders</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Settings</span>
+                </div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="nav-text">Help</span>
+                </div>
+                <div class="nav-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="nav-text">Logout</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-profile">
+                    <div class="user-avatar">JD</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Summary Cards -->
+                <div class="summary-card glass-card">
+                    <div class="summary-header">
+                        <span class="summary-title">Total Balance</span>
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <span class="summary-value">$12,456</span>
+                    <div class="summary-change change-positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12% from last month</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card glass-card">
+                    <div class="summary-header">
+                        <span class="summary-title">Monthly Budget</span>
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span class="summary-value">$2,500</span>
+                    <div class="summary-change change-negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>8% over budget</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card glass-card">
+                    <div class="summary-header">
+                        <span class="summary-title">Savings</span>
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <span class="summary-value">$5,780</span>
+                    <div class="summary-change change-positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5% from last month</span>
+                    </div>
+                </div>
+                
+                <!-- Main Chart -->
+                <div class="chart-card glass-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Spending Overview</h2>
+                        <div class="chart-actions">
+                            <button class="chart-btn">
+                                <i class="fas fa-chart-pie"></i>
+                            </button>
+                            <button class="chart-btn">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="chart-btn">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart will be rendered here -->
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--gray);">
+                            Interactive Chart Area
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wallets Section -->
+                <div class="wallets-section glass-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Your Wallets</h2>
+                        <button class="add-btn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="wallets-grid">
+                        <div class="wallet-card" style="background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);">
+                            <div class="wallet-name">Main Wallet</div>
+                            <div class="wallet-balance">$7,456</div>
+                            <div class="wallet-details">
+                                <span class="wallet-meta">Last transaction: Today</span>
+                                <div class="wallet-actions">
+                                    <button class="wallet-action-btn">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                    <button class="wallet-action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="wallet-card" style="background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%);">
+                            <div class="wallet-name">Savings</div>
+                            <div class="wallet-balance">$5,780</div>
+                            <div class="wallet-details">
+                                <span class="wallet-meta">Last transaction: 2 days ago</span>
+                                <div class="wallet-actions">
+                                    <button class="wallet-action-btn">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </button>
+                                    <button class="wallet-action-btn">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="transactions-section glass-card">
+                    <div class="transactions-header">
+                        <h2 class="section-title">Recent Transactions</h2>
+                        <div class="filter-controls">
+                            <select class="filter-select">
+                                <option>All Categories</option>
+                                <option>Food</option>
+                                <option>Shopping</option>
+                                <option>Bills</option>
+                            </select>
+                            <select class="filter-select">
+                                <option>This Month</option>
+                                <option>This Week</option>
+                                <option>Today</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="transactions-list">
+                        <div class="transaction-item">
+                            <div class="transaction-icon" style="background-color: #E17055;">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Dinner at Restaurant</div>
+                                <div class="transaction-meta">Food • Today • 7:30 PM</div>
+                            </div>
+                            <div class="transaction-amount amount-expense">-$45.00</div>
+                        </div>
+                        
+                        <div class="transaction-item">
+                            <div class="transaction-icon" style="background-color: #0984E3;">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Grocery Shopping</div>
+                                <div class="transaction-meta">Shopping • Yesterday • 4:15 PM</div>
+                            </div>
+                            <div class="transaction-amount amount-expense">-$87.50</div>
+                        </div>
+                        
+                        <div class="transaction-item">
+                            <div class="transaction-icon" style="background-color: #00B894;">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Salary Deposit</div>
+                                <div class="transaction-meta">Income • June 1 • 9:00 AM</div>
+                            </div>
+                            <div class="transaction-amount amount-income">+$3,500.00</div>
+                        </div>
+                        
+                        <div class="transaction-item">
+                            <div class="transaction-icon" style="background-color: #6C5CE7;">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-title">Electricity Bill</div>
+                                <div class="transaction-meta">Bills • May 30 • Auto Pay</div>
+                            </div>
+                            <div class="transaction-amount amount-expense">-$120.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Action Button -->
+        <div class="fab">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const loginPage = document.getElementById('loginPage');
+            const loginCard = document.getElementById('loginCard');
+            const dashboard = document.getElementById('dashboard');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Handle login form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple validation (in a real app, you would check credentials with a server)
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                if (email && password) {
+                    // Animate login card out
+                    loginCard.classList.add('hidden');
+                    
+                    // After animation completes, show dashboard
+                    setTimeout(() => {
+                        loginPage.style.display = 'none';
+                        dashboard.style.display = 'grid';
+                    }, 300);
+                }
+            });
+            
+            // Handle logout
+            logoutBtn.addEventListener('click', function() {
+                // Animate dashboard out
+                dashboard.style.display = 'none';
+                
+                // Show login page
+                loginPage.style.display = 'flex';
+                loginCard.classList.remove('hidden');
+                
+                // Reset form
+                loginForm.reset();
+            });
+        });
+    </script>
+</body>
+</html>.      dashboard
